@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bot_sdk_1 = require("@line/bot-sdk");
-const api_1 = require("@line/bot-sdk/dist/messaging-api/api");
 const express_1 = __importDefault(require("express"));
 const ts_dotenv_1 = require("ts-dotenv");
 const env = (0, ts_dotenv_1.load)({
@@ -27,16 +26,11 @@ const config = {
     channelSecret: env.CHANNEL_SECRET || "",
 };
 const middlewareConfig = config;
-const client = new api_1.MessagingApiClient({
+// MessagingApiClientの代わりにClientを使う
+const client = new bot_sdk_1.Client({
     channelAccessToken: env.CHANNEL_ACCESS_TOKEN || "",
 });
 const app = (0, express_1.default)();
-/*app.get("/", async (_: Request, res: Response): Promise<Response> => {
-  return res.status(200).send({
-    message: "success",
-  });
-});
-*/
 app.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).send({
         message: "success",
@@ -63,10 +57,7 @@ const textEventHandler = (event) => __awaiter(void 0, void 0, void 0, function* 
         type: "text",
         text: resText,
     };
-    yield client.replyMessage({
-        replyToken: replyToken,
-        messages: [response],
-    });
+    yield client.replyMessage(replyToken, [response]);
 });
 app.post("/webhook", (0, bot_sdk_1.middleware)(middlewareConfig), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const events = req.body.events;
@@ -78,35 +69,11 @@ app.post("/webhook", (0, bot_sdk_1.middleware)(middlewareConfig), (req, res) => 
             if (err instanceof Error) {
                 console.error(err);
             }
-            // エラーレスポンスの終了
             res.status(500).send("Internal Server Error");
         }
     })));
-    // 成功レスポンスの終了
     res.status(200).send("Events processed");
 }));
-/*
-app.post(
-  "/webhook",
-  middleware(middlewareConfig),
-  async (req: Request, res: Response): Promise<Response> => {
-    const events: WebhookEvent[] = req.body.events;
-    await Promise.all(
-      events.map(async (event: WebhookEvent) => {
-        try {
-          await textEventHandler(event);
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            console.error(err);
-          }
-          return res.status(500);
-        }
-      })
-    );
-    return res.status(200);
-  }
-);
-*/
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}/`);
 });

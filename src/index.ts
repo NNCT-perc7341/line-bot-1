@@ -4,10 +4,8 @@ import {
   WebhookEvent,
   TextMessage,
   MessageAPIResponseBase,
+  Client,
 } from "@line/bot-sdk";
-import {
-  MessagingApiClient,
-} from "@line/bot-sdk/dist/messaging-api/api";
 import express, { Application, Request, Response } from "express";
 import { load } from "ts-dotenv";
 
@@ -24,18 +22,14 @@ const config = {
   channelSecret: env.CHANNEL_SECRET || "",
 };
 const middlewareConfig: MiddlewareConfig = config;
-const client = new MessagingApiClient({
+
+// MessagingApiClientの代わりにClientを使う
+const client = new Client({
   channelAccessToken: env.CHANNEL_ACCESS_TOKEN || "",
 });
 
 const app: Application = express();
 
-/*app.get("/", async (_: Request, res: Response): Promise<Response> => {
-  return res.status(200).send({
-    message: "success",
-  });
-});
-*/
 app.get("/", async (_: Request, res: Response) => {
   res.status(200).send({
     message: "success",
@@ -50,7 +44,6 @@ const textEventHandler = async (
   }
 
   const { replyToken } = event;
-
   const { text } = event.message;
 
   const resText = (() => {
@@ -69,10 +62,7 @@ const textEventHandler = async (
     type: "text",
     text: resText,
   };
-  await client.replyMessage({
-    replyToken: replyToken,
-    messages: [response],
-  });
+  await client.replyMessage(replyToken, [response]);
 };
 
 app.post(
@@ -88,38 +78,13 @@ app.post(
           if (err instanceof Error) {
             console.error(err);
           }
-          // エラーレスポンスの終了
           res.status(500).send("Internal Server Error");
         }
       })
     );
-    // 成功レスポンスの終了
     res.status(200).send("Events processed");
   }
 );
-
-/*
-app.post(
-  "/webhook",
-  middleware(middlewareConfig),
-  async (req: Request, res: Response): Promise<Response> => {
-    const events: WebhookEvent[] = req.body.events;
-    await Promise.all(
-      events.map(async (event: WebhookEvent) => {
-        try {
-          await textEventHandler(event);
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            console.error(err);
-          }
-          return res.status(500);
-        }
-      })
-    );
-    return res.status(200);
-  }
-);
-*/
 
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}/`);
