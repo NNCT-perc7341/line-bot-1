@@ -70,7 +70,6 @@ app.get("/pageB", (req: Request, res: Response) => {
   const lastAccess = req.cookies.lastAccess;
   if (lastAccess) {
     const lastAccessDate = new Date(lastAccess);
-    lastAccessDate.setHours(lastAccessDate.getHours() + 9); // 日本時間に調整
 
     const formattedLastAccess = `${lastAccessDate.getFullYear()}年${lastAccessDate.getMonth() + 1}月${lastAccessDate.getDate()}日 ${lastAccessDate.getHours()}時${lastAccessDate.getMinutes()}分${lastAccessDate.getSeconds()}秒`;
 
