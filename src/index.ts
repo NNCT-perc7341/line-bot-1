@@ -5,6 +5,7 @@ import {
   TextMessage,
   MessageAPIResponseBase,
   Client,
+  TemplateMessage
 } from "@line/bot-sdk";
 import express, { Application, Request, Response } from "express";
 import { load } from "ts-dotenv";
@@ -23,7 +24,6 @@ const config = {
 };
 const middlewareConfig: MiddlewareConfig = config;
 
-// MessagingApiClientの代わりにClientを使う
 const client = new Client({
   channelAccessToken: env.CHANNEL_ACCESS_TOKEN || "",
 });
@@ -36,6 +36,98 @@ app.get("/", async (_: Request, res: Response) => {
   });
 });
 
+// ボタンテンプレートメッセージ
+const sendButtonTemplate = async (replyToken: string) => {
+  const message: TemplateMessage = {
+    type: "template",
+    altText: "これはボタンテンプレートのメッセージです",
+    template: {
+      type: "buttons",
+      thumbnailImageUrl: "https://example.com/sample.jpg",
+      title: "メニュー",
+      text: "メニューから選択してください",
+      actions: [
+        { type: "postback", label: "選択肢1", data: "action=buy&itemid=123" },
+        { type: "message", label: "選択肢2", text: "選択肢2が選ばれました" },
+        { type: "uri", label: "Googleへ", uri: "https://www.google.com" },
+      ]
+    }
+  };
+  await client.replyMessage(replyToken, message);
+};
+
+// 確認テンプレートメッセージ
+const sendConfirmTemplate = async (replyToken: string) => {
+  const message: TemplateMessage = {
+    type: "template",
+    altText: "これは確認テンプレートのメッセージです",
+    template: {
+      type: "confirm",
+      text: "この操作を行いますか？",
+      actions: [
+        { type: "message", label: "はい", text: "はい" },
+        { type: "message", label: "いいえ", text: "いいえ" }
+      ]
+    }
+  };
+  await client.replyMessage(replyToken, message);
+};
+
+// カルーセルテンプレートメッセージ
+const sendCarouselTemplate = async (replyToken: string) => {
+  const message: TemplateMessage = {
+    type: "template",
+    altText: "これはカルーセルテンプレートのメッセージです",
+    template: {
+      type: "carousel",
+      columns: [
+        {
+          thumbnailImageUrl: "https://example.com/item1.jpg",
+          title: "アイテム1",
+          text: "アイテム1の説明",
+          actions: [
+            { type: "postback", label: "購入", data: "action=buy&itemid=1" },
+            { type: "uri", label: "詳細", uri: "https://example.com/item1" }
+          ]
+        },
+        {
+          thumbnailImageUrl: "https://example.com/item2.jpg",
+          title: "アイテム2",
+          text: "アイテム2の説明",
+          actions: [
+            { type: "postback", label: "購入", data: "action=buy&itemid=2" },
+            { type: "uri", label: "詳細", uri: "https://example.com/item2" }
+          ]
+        }
+      ]
+    }
+  };
+  await client.replyMessage(replyToken, message);
+};
+
+// 画像カルーセルテンプレートメッセージ
+const sendImageCarouselTemplate = async (replyToken: string) => {
+  const message: TemplateMessage = {
+    type: "template",
+    altText: "これは画像カルーセルテンプレートのメッセージです",
+    template: {
+      type: "image_carousel",
+      columns: [
+        {
+          imageUrl: "https://example.com/item1.jpg",
+          action: { type: "uri", label: "詳細", uri: "https://example.com/item1" }
+        },
+        {
+          imageUrl: "https://example.com/item2.jpg",
+          action: { type: "uri", label: "詳細", uri: "https://example.com/item2" }
+        }
+      ]
+    }
+  };
+  await client.replyMessage(replyToken, message);
+};
+
+// メッセージを処理する関数
 const textEventHandler = async (
   event: WebhookEvent
 ): Promise<MessageAPIResponseBase | undefined> => {
@@ -46,25 +138,30 @@ const textEventHandler = async (
   const { replyToken } = event;
   const { text } = event.message;
 
-  const resText = (() => {
-    switch (Math.floor(Math.random() * 3)) {
-      case 0:
-        return text.split("").reverse().join("");
-      case 1:
-        return text.split("").join(" ");
-      default:
-        return text.split("").reverse().join(" ");
-    }
-  })();
-  console.log(resText);
+  // テンプレートメッセージの処理
+  if (text === "ボタンテンプレート") {
+    await sendButtonTemplate(replyToken);
+    return undefined;
+  } else if (text === "確認テンプレート") {
+    await sendConfirmTemplate(replyToken);
+    return undefined;
+  } else if (text === "カルーセルテンプレート") {
+    await sendCarouselTemplate(replyToken);
+    return undefined;
+  } else if (text === "画像カルーセル") {
+    await sendImageCarouselTemplate(replyToken);
+    return undefined;
+  }
 
+  // それ以外はおうむ返し
   const response: TextMessage = {
     type: "text",
-    text: resText,
+    text: text,
   };
-  await client.replyMessage(replyToken, [response]);
+  await client.replyMessage(replyToken, response);
 };
 
+// Webhookエンドポイント
 app.post(
   "/webhook",
   middleware(middlewareConfig),
