@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const bot_sdk_1 = require("@line/bot-sdk");
 const express_1 = __importDefault(require("express"));
+const cookie_parser_1 = __importDefault(require("cookie-parser")); // クッキーを処理するために追加
 const ts_dotenv_1 = require("ts-dotenv");
 const env = (0, ts_dotenv_1.load)({
     CHANNEL_ACCESS_TOKEN: String,
@@ -30,11 +31,29 @@ const client = new bot_sdk_1.Client({
     channelAccessToken: env.CHANNEL_ACCESS_TOKEN || "",
 });
 const app = (0, express_1.default)();
+// クッキーを使用するためのミドルウェアを追加
+app.use((0, cookie_parser_1.default)());
 app.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).send({
         message: "success",
     });
 }));
+// ページA：アクセス時の日時をクッキーに保存
+app.get("/pageA", (req, res) => {
+    const now = new Date().toISOString();
+    res.cookie("lastAccess", now, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); // クッキーを1日保持
+    res.status(200).send(`<html><body><p>アクセス日時を記録しました: ${now}</p></body></html>`);
+});
+// ページB：ページAで保存した日時を表示
+app.get("/pageB", (req, res) => {
+    const lastAccess = req.cookies.lastAccess;
+    if (lastAccess) {
+        res.status(200).send(`<html><body><p>前回のアクセス日時: ${lastAccess}</p></body></html>`);
+    }
+    else {
+        res.status(200).send("<html><body><p>前回のアクセス日時が記録されていません。</p></body></html>");
+    }
+});
 // ボタンテンプレートメッセージ
 const sendButtonTemplate = (replyToken) => __awaiter(void 0, void 0, void 0, function* () {
     const message = {

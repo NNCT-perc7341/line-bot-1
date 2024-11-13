@@ -8,6 +8,7 @@ import {
   TemplateMessage
 } from "@line/bot-sdk";
 import express, { Application, Request, Response } from "express";
+import cookieParser from "cookie-parser"; // クッキーを処理するために追加
 import { load } from "ts-dotenv";
 
 const env = load({
@@ -30,10 +31,30 @@ const client = new Client({
 
 const app: Application = express();
 
+// クッキーを使用するためのミドルウェアを追加
+app.use(cookieParser());
+
 app.get("/", async (_: Request, res: Response) => {
   res.status(200).send({
     message: "success",
   });
+});
+
+// ページA：アクセス時の日時をクッキーに保存
+app.get("/pageA", (req: Request, res: Response) => {
+  const now = new Date().toISOString();
+  res.cookie("lastAccess", now, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); // クッキーを1日保持
+  res.status(200).send(`<html><body><p>アクセス日時を記録しました: ${now}</p></body></html>`);
+});
+
+// ページB：ページAで保存した日時を表示
+app.get("/pageB", (req: Request, res: Response) => {
+  const lastAccess = req.cookies.lastAccess;
+  if (lastAccess) {
+    res.status(200).send(`<html><body><p>前回のアクセス日時: ${lastAccess}</p></body></html>`);
+  } else {
+    res.status(200).send("<html><body><p>前回のアクセス日時が記録されていません。</p></body></html>");
+  }
 });
 
 // ボタンテンプレートメッセージ
