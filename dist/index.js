@@ -78,21 +78,21 @@ const sendCarouselTemplate = (replyToken) => __awaiter(void 0, void 0, void 0, f
             type: "carousel",
             columns: [
                 {
-                    thumbnailImageUrl: "https://example.com/item1.jpg",
-                    title: "アイテム1",
-                    text: "アイテム1の説明",
+                    thumbnailImageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/antigravity-s_1024x1024.png",
+                    title: "antigravity",
+                    text: "こんなビールです。",
                     actions: [
-                        { type: "postback", label: "購入", data: "action=buy&itemid=1" },
-                        { type: "uri", label: "詳細", uri: "https://example.com/item1" }
+                        { type: "message", label: "購入", text: "購入したい！" },
+                        { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/antigravity" }
                     ]
                 },
                 {
-                    thumbnailImageUrl: "https://example.com/item2.jpg",
-                    title: "アイテム2",
-                    text: "アイテム2の説明",
+                    thumbnailImageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/minitel-s_1024x1024.png",
+                    title: "Minitel",
+                    text: "こんなビールです",
                     actions: [
-                        { type: "postback", label: "購入", data: "action=buy&itemid=2" },
-                        { type: "uri", label: "詳細", uri: "https://example.com/item2" }
+                        { type: "message", label: "購入", text: "購入したい！" },
+                        { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/minitel" }
                     ]
                 }
             ]
@@ -109,12 +109,12 @@ const sendImageCarouselTemplate = (replyToken) => __awaiter(void 0, void 0, void
             type: "image_carousel",
             columns: [
                 {
-                    imageUrl: "https://example.com/item1.jpg",
-                    action: { type: "uri", label: "詳細", uri: "https://example.com/item1" }
+                    imageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/IMG_0667_1024x1024.jpg",
+                    action: { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/np" }
                 },
                 {
-                    imageUrl: "https://example.com/item2.jpg",
-                    action: { type: "uri", label: "詳細", uri: "https://example.com/item2" }
+                    imageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/vga-s_1024x1024.png",
+                    action: { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/vga" }
                 }
             ]
         }
