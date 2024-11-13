@@ -41,22 +41,64 @@ app.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
 // ページA：アクセス時の日時をクッキーに保存
 app.get("/pageA", (req, res) => {
     const now = new Date();
-    now.setHours(now.getHours() + 9);
+    now.setHours(now.getHours() + 9); // 日本時間に調整
     const formattedDate = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${now.getHours()}時${now.getMinutes()}分${now.getSeconds()}秒`;
     res.cookie("lastAccess", now.toISOString(), { maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); // クッキーにはISO形式を保存
-    res.status(200).send(`<html><body><p>アクセス日時を記録しました: ${formattedDate}</p></body></html>`);
+    res.status(200).send(`
+    <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; }
+          .title { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+          .content { font-size: 18px; }
+        </style>
+      </head>
+      <body>
+        <div class="title">ページA</div>
+        <div class="content">アクセス日時を記録しました: ${formattedDate}</div>
+      </body>
+    </html>
+  `);
 });
 // ページB：ページAで保存した日時を表示
 app.get("/pageB", (req, res) => {
     const lastAccess = req.cookies.lastAccess;
     if (lastAccess) {
         const lastAccessDate = new Date(lastAccess);
-        lastAccessDate.setHours(lastAccessDate.getHours() + 9);
+        lastAccessDate.setHours(lastAccessDate.getHours() + 9); // 日本時間に調整
         const formattedLastAccess = `${lastAccessDate.getFullYear()}年${lastAccessDate.getMonth() + 1}月${lastAccessDate.getDate()}日 ${lastAccessDate.getHours()}時${lastAccessDate.getMinutes()}分${lastAccessDate.getSeconds()}秒`;
-        res.status(200).send(`<html><body><p>前回のアクセス日時: ${formattedLastAccess}</p></body></html>`);
+        res.status(200).send(`
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; }
+            .title { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+            .content { font-size: 18px; }
+          </style>
+        </head>
+        <body>
+          <div class="title">ページB</div>
+          <div class="content">前回のアクセス日時: ${formattedLastAccess}</div>
+        </body>
+      </html>
+    `);
     }
     else {
-        res.status(200).send("<html><body><p>前回のアクセス日時が記録されていません。</p></body></html>");
+        res.status(200).send(`
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; }
+            .title { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+            .content { font-size: 18px; }
+          </style>
+        </head>
+        <body>
+          <div class="title">ページB</div>
+          <div class="content">前回のアクセス日時が記録されていません。</div>
+        </body>
+      </html>
+    `);
     }
 });
 // イベントを処理する関数
