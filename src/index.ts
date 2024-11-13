@@ -57,7 +57,58 @@ app.get("/pageB", (req: Request, res: Response) => {
   }
 });
 
-// ボタンテンプレートメッセージ
+// イベントを処理する関数
+const eventHandler = async (
+  event: WebhookEvent
+): Promise<MessageAPIResponseBase | undefined> => {
+  if (event.type === "postback") {
+    // postbackイベントの処理
+    const replyToken = event.replyToken;
+    const data = event.postback.data;
+
+    // postbackデータに基づいて画像カルーセルを表示
+    if (data === "showImageCarousel" && replyToken) {
+      await sendImageCarouselTemplate(replyToken);
+    }
+    return;
+  } else if (event.type === "message" && event.message.type === "text") {
+    const replyToken = event.replyToken;
+    const { text } = event.message;
+
+    // "a" というメッセージを受信した場合
+    if (text === "a" && replyToken) {
+      const response: TextMessage = {
+        type: "text",
+        text: "ABC",
+      };
+      await client.replyMessage(replyToken, response);
+      return undefined;
+    }
+
+    // 他のテンプレートメッセージの処理
+    if (replyToken) {
+      if (text === "ボタンテンプレート") {
+        await sendButtonTemplate(replyToken);
+      } else if (text === "確認テンプレート") {
+        await sendConfirmTemplate(replyToken);
+      } else if (text === "カルーセルテンプレート") {
+        await sendCarouselTemplate(replyToken);
+      } else if (text === "画像カルーセル") {
+        await sendImageCarouselTemplate(replyToken);
+      } else {
+        // おうむ返しの処理
+        const response: TextMessage = {
+          type: "text",
+          text: text,
+        };
+        await client.replyMessage(replyToken, response);
+      }
+    }
+  }
+  return undefined;
+};
+
+// ボタンテンプレートメッセージ（例）
 const sendButtonTemplate = async (replyToken: string) => {
   const message: TemplateMessage = {
     type: "template",
@@ -76,7 +127,7 @@ const sendButtonTemplate = async (replyToken: string) => {
   await client.replyMessage(replyToken, message);
 };
 
-// 確認テンプレートメッセージ
+// 確認テンプレートメッセージ（例）
 const sendConfirmTemplate = async (replyToken: string) => {
   const message: TemplateMessage = {
     type: "template",
@@ -93,7 +144,7 @@ const sendConfirmTemplate = async (replyToken: string) => {
   await client.replyMessage(replyToken, message);
 };
 
-// カルーセルテンプレートメッセージ
+// カルーセルテンプレートメッセージ（例）
 const sendCarouselTemplate = async (replyToken: string) => {
   const message: TemplateMessage = {
     type: "template",
@@ -147,40 +198,6 @@ const sendImageCarouselTemplate = async (replyToken: string) => {
   await client.replyMessage(replyToken, message);
 };
 
-// メッセージを処理する関数
-const textEventHandler = async (
-  event: WebhookEvent
-): Promise<MessageAPIResponseBase | undefined> => {
-  if (event.type !== "message" || event.message.type !== "text") {
-    return;
-  }
-
-  const { replyToken } = event;
-  const { text } = event.message;
-
-  // テンプレートメッセージの処理
-  if (text === "ボタンテンプレート") {
-    await sendButtonTemplate(replyToken);
-    return undefined;
-  } else if (text === "確認テンプレート") {
-    await sendConfirmTemplate(replyToken);
-    return undefined;
-  } else if (text === "カルーセルテンプレート") {
-    await sendCarouselTemplate(replyToken);
-    return undefined;
-  } else if (text === "画像カルーセル") {
-    await sendImageCarouselTemplate(replyToken);
-    return undefined;
-  }
-
-  // それ以外はおうむ返し
-  const response: TextMessage = {
-    type: "text",
-    text: text,
-  };
-  await client.replyMessage(replyToken, response);
-};
-
 // Webhookエンドポイント
 app.post(
   "/webhook",
@@ -190,7 +207,7 @@ app.post(
     await Promise.all(
       events.map(async (event: WebhookEvent) => {
         try {
-          await textEventHandler(event);
+          await eventHandler(event);
         } catch (err: unknown) {
           if (err instanceof Error) {
             console.error(err);

@@ -54,7 +54,57 @@ app.get("/pageB", (req, res) => {
         res.status(200).send("<html><body><p>前回のアクセス日時が記録されていません。</p></body></html>");
     }
 });
-// ボタンテンプレートメッセージ
+// イベントを処理する関数
+const eventHandler = (event) => __awaiter(void 0, void 0, void 0, function* () {
+    if (event.type === "postback") {
+        // postbackイベントの処理
+        const replyToken = event.replyToken;
+        const data = event.postback.data;
+        // postbackデータに基づいて画像カルーセルを表示
+        if (data === "showImageCarousel" && replyToken) {
+            yield sendImageCarouselTemplate(replyToken);
+        }
+        return;
+    }
+    else if (event.type === "message" && event.message.type === "text") {
+        const replyToken = event.replyToken;
+        const { text } = event.message;
+        // "a" というメッセージを受信した場合
+        if (text === "a" && replyToken) {
+            const response = {
+                type: "text",
+                text: "ABC",
+            };
+            yield client.replyMessage(replyToken, response);
+            return undefined;
+        }
+        // 他のテンプレートメッセージの処理
+        if (replyToken) {
+            if (text === "ボタンテンプレート") {
+                yield sendButtonTemplate(replyToken);
+            }
+            else if (text === "確認テンプレート") {
+                yield sendConfirmTemplate(replyToken);
+            }
+            else if (text === "カルーセルテンプレート") {
+                yield sendCarouselTemplate(replyToken);
+            }
+            else if (text === "画像カルーセル") {
+                yield sendImageCarouselTemplate(replyToken);
+            }
+            else {
+                // おうむ返しの処理
+                const response = {
+                    type: "text",
+                    text: text,
+                };
+                yield client.replyMessage(replyToken, response);
+            }
+        }
+    }
+    return undefined;
+});
+// ボタンテンプレートメッセージ（例）
 const sendButtonTemplate = (replyToken) => __awaiter(void 0, void 0, void 0, function* () {
     const message = {
         type: "template",
@@ -72,7 +122,7 @@ const sendButtonTemplate = (replyToken) => __awaiter(void 0, void 0, void 0, fun
     };
     yield client.replyMessage(replyToken, message);
 });
-// 確認テンプレートメッセージ
+// 確認テンプレートメッセージ（例）
 const sendConfirmTemplate = (replyToken) => __awaiter(void 0, void 0, void 0, function* () {
     const message = {
         type: "template",
@@ -88,7 +138,7 @@ const sendConfirmTemplate = (replyToken) => __awaiter(void 0, void 0, void 0, fu
     };
     yield client.replyMessage(replyToken, message);
 });
-// カルーセルテンプレートメッセージ
+// カルーセルテンプレートメッセージ（例）
 const sendCarouselTemplate = (replyToken) => __awaiter(void 0, void 0, void 0, function* () {
     const message = {
         type: "template",
@@ -140,43 +190,12 @@ const sendImageCarouselTemplate = (replyToken) => __awaiter(void 0, void 0, void
     };
     yield client.replyMessage(replyToken, message);
 });
-// メッセージを処理する関数
-const textEventHandler = (event) => __awaiter(void 0, void 0, void 0, function* () {
-    if (event.type !== "message" || event.message.type !== "text") {
-        return;
-    }
-    const { replyToken } = event;
-    const { text } = event.message;
-    // テンプレートメッセージの処理
-    if (text === "ボタンテンプレート") {
-        yield sendButtonTemplate(replyToken);
-        return undefined;
-    }
-    else if (text === "確認テンプレート") {
-        yield sendConfirmTemplate(replyToken);
-        return undefined;
-    }
-    else if (text === "カルーセルテンプレート") {
-        yield sendCarouselTemplate(replyToken);
-        return undefined;
-    }
-    else if (text === "画像カルーセル") {
-        yield sendImageCarouselTemplate(replyToken);
-        return undefined;
-    }
-    // それ以外はおうむ返し
-    const response = {
-        type: "text",
-        text: text,
-    };
-    yield client.replyMessage(replyToken, response);
-});
 // Webhookエンドポイント
 app.post("/webhook", (0, bot_sdk_1.middleware)(middlewareConfig), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const events = req.body.events;
     yield Promise.all(events.map((event) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            yield textEventHandler(event);
+            yield eventHandler(event);
         }
         catch (err) {
             if (err instanceof Error) {
