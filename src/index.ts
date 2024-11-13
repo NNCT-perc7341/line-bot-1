@@ -43,13 +43,12 @@ const sendButtonTemplate = async (replyToken: string) => {
     altText: "これはボタンテンプレートのメッセージです",
     template: {
       type: "buttons",
-      thumbnailImageUrl: "https://example.com/sample.jpg",
       title: "メニュー",
       text: "メニューから選択してください",
       actions: [
-        { type: "postback", label: "選択肢1", data: "action=buy&itemid=123" },
+        { type: "message", label: "選択肢1", text: "選択肢1が選ばれました" },
         { type: "message", label: "選択肢2", text: "選択肢2が選ばれました" },
-        { type: "uri", label: "Googleへ", uri: "https://www.google.com" },
+        { type: "message", label: "選択肢3", text: "選択肢3が選ばれました" },
       ]
     }
   };
