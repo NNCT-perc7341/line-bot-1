@@ -40,15 +40,18 @@ app.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 // ページA：アクセス時の日時をクッキーに保存
 app.get("/pageA", (req, res) => {
-    const now = new Date().toISOString();
-    res.cookie("lastAccess", now, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); // クッキーを1日保持
-    res.status(200).send(`<html><body><p>アクセス日時を記録しました: ${now}</p></body></html>`);
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${now.getHours()}時${now.getMinutes()}分${now.getSeconds()}秒`;
+    res.cookie("lastAccess", now.toISOString(), { maxAge: 24 * 60 * 60 * 1000, httpOnly: true }); // クッキーにはISO形式を保存
+    res.status(200).send(`<html><body><p>アクセス日時を記録しました: ${formattedDate}</p></body></html>`);
 });
 // ページB：ページAで保存した日時を表示
 app.get("/pageB", (req, res) => {
     const lastAccess = req.cookies.lastAccess;
     if (lastAccess) {
-        res.status(200).send(`<html><body><p>前回のアクセス日時: ${lastAccess}</p></body></html>`);
+        const lastAccessDate = new Date(lastAccess);
+        const formattedLastAccess = `${lastAccessDate.getFullYear()}年${lastAccessDate.getMonth() + 1}月${lastAccessDate.getDate()}日 ${lastAccessDate.getHours()}時${lastAccessDate.getMinutes()}分${lastAccessDate.getSeconds()}秒`;
+        res.status(200).send(`<html><body><p>前回のアクセス日時: ${formattedLastAccess}</p></body></html>`);
     }
     else {
         res.status(200).send("<html><body><p>前回のアクセス日時が記録されていません。</p></body></html>");
