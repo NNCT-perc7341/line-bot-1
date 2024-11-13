@@ -204,6 +204,7 @@ const sendCarouselTemplate = async (replyToken: string) => {
       columns: [
         {
           thumbnailImageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/antigravity-s_1024x1024.png",
+          imageBackgroundColor: "#E6DC61",
           title: "antigravity",
           text: "こんなビールです。",
           actions: [
@@ -213,6 +214,7 @@ const sendCarouselTemplate = async (replyToken: string) => {
         },
         {
           thumbnailImageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/minitel-s_1024x1024.png",
+          imageBackgroundColor: "#EB9176",
           title: "Minitel",
           text: "こんなビールです",
           actions: [
