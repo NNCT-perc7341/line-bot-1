@@ -148,16 +148,15 @@ app.get("/login", (req, res) => {
             <label for="lineId">LINE ID:</label>
             <input type="text" id="lineId" name="lineId" value="${lineId}" readonly>
 
-            <button type="submit">ログイン</button>
+            <button type="submit">送信</button>
           </form>
-          <button onclick="loadInfo()">情報を呼び出す</button>
+          <button onclick="loadInfo()">ログイン情報を表示する</button>
         </div>
       </body>
     </html>
   `);
 });
 //login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
-// login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
 app.post("/login/confirm", (req, res) => {
     const { email, lineId } = req.body;
     // メールアドレスとLINE IDをクッキーに保存
