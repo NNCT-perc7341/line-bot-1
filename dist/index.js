@@ -126,6 +126,20 @@ app.get("/login", (req, res) => {
 
           // 情報を呼び出すボタンが押されたときの処理
           function loadInfo() {
+            const email = decodeURIComponent(getCookie('email') || ''); // デコードを追加
+            const lineId = decodeURIComponent(getCookie('lineId') || ''); // デコードを追加
+            if (email && lineId) {
+              document.getElementById('email').value = email;
+              document.getElementById('lineId').value = lineId;
+              console.log("メールアドレス:", email);
+              console.log("LINE ID:", lineId);
+            } else {
+              alert('クッキーに保存された情報がありません');
+            }
+          }
+
+          // 情報を呼び出すボタンが押されたときの処理
+          function loadInfo() {
             const email = getCookie('email');
             const lineId = getCookie('lineId');
             if (email && lineId) {
