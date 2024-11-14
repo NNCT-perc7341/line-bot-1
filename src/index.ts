@@ -111,19 +111,19 @@ app.get("/pageB", (req: Request, res: Response) => {
 const eventHandler = async (
   event: WebhookEvent
 ): Promise<MessageAPIResponseBase | undefined> => {
-  if (event.type === "postback") {
-    // postbackイベントの処理
+  if (event.type === "postback") {     // postbackイベントの処理
     const replyToken = event.replyToken;
     const data = event.postback.data;
 
-    // postbackデータに基づいて画像カルーセルを表示
+    // 画像カルーセルを表示
     if (data === "showImageCarousel" && replyToken) {
       await sendImageCarouselTemplate(replyToken);
     }
     return;
-  } else if (event.type === "message" && event.message.type === "text") {
+  } else if (event.type === "message" && event.message.type === "text") { //messageイベントの処理
     const replyToken = event.replyToken;
     const { text } = event.message;
+    const userId = event.source.userId;
 
     // "a" というメッセージを受信した場合
     if (text === "a" && replyToken) {
@@ -145,6 +145,9 @@ const eventHandler = async (
         await sendCarouselTemplate(replyToken);
       } else if (text === "画像カルーセル") {
         await sendImageCarouselTemplate(replyToken);
+      } else if (text === "ログイン") {
+        if (userId) await sendLoginForm(replyToken, userId);
+        else console.error("ユーザーIDが取得できませんでした");
       } else {
         // おうむ返しの処理
         const response: TextMessage = {
@@ -247,6 +250,30 @@ const sendImageCarouselTemplate = async (replyToken: string) => {
       ]
     }
   };
+  await client.replyMessage(replyToken, message);
+};
+
+// ログインフォーム
+const sendLoginForm = async (replyToken: string, userId: string) => {
+  const loginUrl = `https://https://line-bot-1-1.vercel.app/login?userId=${userId}`;
+
+  const message: TemplateMessage = {
+    type: "template",
+    altText: "ログイン用のメッセージです",
+    template: {
+      type: "buttons",
+      title: "ログイン",
+      text: "以下のボタンを押してログインしてください",
+      actions: [
+        {
+          type: "uri",
+          label: "ログイン",
+          uri: loginUrl,
+        }
+      ]
+    }
+  };
+
   await client.replyMessage(replyToken, message);
 };
 
