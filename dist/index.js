@@ -113,9 +113,31 @@ app.get("/login", (req, res) => {
           .container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
           label { display: block; margin: 10px 0 5px; }
           input { width: 100%; padding: 8px; box-sizing: border-box; }
-          button { width: 100%; padding: 10px; margin-top: 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+          button { width: 100%; padding: 10px; margin-top: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
           button:hover { background-color: #45a049; }
         </style>
+        <script>
+          // クッキーを読み込む関数
+          function getCookie(name) {
+            const value = "; " + document.cookie;
+            const parts = value.split("; " + name + "=");
+            if (parts.length === 2) return parts.pop().split(";").shift();
+          }
+
+          // 情報を呼び出すボタンが押されたときの処理
+          function loadInfo() {
+            const email = getCookie('email');
+            const lineId = getCookie('lineId');
+            if (email && lineId) {
+              document.getElementById('email').value = email;
+              document.getElementById('lineId').value = lineId;
+              console.log("メールアドレス:", email);
+              console.log("LINE ID:", lineId);
+            } else {
+              alert('クッキーに保存された情報がありません');
+            }
+          }
+        </script>
       </head>
       <body>
         <div class="container">
@@ -129,6 +151,7 @@ app.get("/login", (req, res) => {
 
             <button type="submit">ログイン</button>
           </form>
+          <button onclick="loadInfo()">情報を呼び出す</button>
         </div>
       </body>
     </html>
@@ -138,8 +161,8 @@ app.get("/login", (req, res) => {
 app.post("/login/confirm", express_1.default.urlencoded({ extended: true }), (req, res) => {
     const { email, lineId } = req.body;
     // メールアドレスとLINE IDをクッキーに保存
-    res.cookie("email", email, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
-    res.cookie("lineId", lineId, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+    res.cookie("email", email, { maxAge: 24 * 60 * 60 * 1000 }); // クライアントからアクセスできるように httpOnly を省略
+    res.cookie("lineId", lineId, { maxAge: 24 * 60 * 60 * 1000 }); // クライアントからアクセスできるように httpOnly を省略
     res.send(`
     <html>
       <head>
