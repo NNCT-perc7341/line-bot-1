@@ -73,7 +73,7 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
             }
             else if (text === "rm-test2" && source.userId) {
                 try {
-                    yield client.linkRichMenuToUser(source.userId, "richmenu-alias-rm-test2");
+                    yield client.linkRichMenuToUser(source.userId, "richmenu-0221df7b954c4e824162a8360375c347");
                     console.log(`Successfully linked rich menu to user ${userId}`);
                 }
                 catch (error) {
@@ -82,7 +82,7 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
                         text: "Failed to link rich menu",
                     };
                     yield client.replyMessage(replyToken, response);
-                    console.error(`Failed to link rich menu: ${error}`);
+                    console.error(`Failed to link rich menu: ${error}, User: ${source.userId}`);
                 }
             }
             else {
