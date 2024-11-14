@@ -82,6 +82,7 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
                         text: "Failed to link rich menu",
                     };
                     yield client.replyMessage(replyToken, response);
+                    console.error(`Failed to link rich menu: ${error}`);
                 }
             }
             else {

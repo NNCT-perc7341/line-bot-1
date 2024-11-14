@@ -75,6 +75,7 @@ export const eventHandler = async (
             text: "Failed to link rich menu",
           };
           await client.replyMessage(replyToken, response);
+          console.error(`Failed to link rich menu: ${error}`);
         }
       } else {
         const response: TextMessage = {
