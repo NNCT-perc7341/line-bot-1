@@ -125,7 +125,6 @@ app.get("/login", (req: Request, res: Response) => {
         </style>
         <script>
           // クッキーを読み込む関数
-          // クッキーを読み込む関数
           function getCookie(name) {
             const value = "; " + document.cookie;
             const parts = value.split("; " + name + "=");
@@ -165,7 +164,7 @@ app.get("/login", (req: Request, res: Response) => {
 });
 
 //login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
-app.post("/login/confirm", express.urlencoded({ extended: true }), (req: Request, res: Response) => {
+app.post("/login/confirm", (req: Request, res: Response) => {
   const { email, lineId } = req.body;
 
   // メールアドレスとLINE IDをクッキーに保存
