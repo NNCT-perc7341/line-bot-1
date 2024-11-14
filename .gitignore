@@ -2,3 +2,4 @@ node-modules
 .env
 src/index_BUP.ts
 dist/index_BUP.js
+.DS_Store
