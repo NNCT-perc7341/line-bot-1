@@ -34,6 +34,7 @@ const app: Application = express();
 
 // クッキーを使用するためのミドルウェアを追加
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", async (_: Request, res: Response) => {
   res.status(200).send({
@@ -164,11 +165,12 @@ app.get("/login", (req: Request, res: Response) => {
 });
 
 //login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
+// login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
 app.post("/login/confirm", (req: Request, res: Response) => {
   const { email, lineId } = req.body;
 
   // メールアドレスとLINE IDをクッキーに保存
-  res.cookie("email", email, { maxAge: 24 * 60 * 60 * 1000 }); 
+  res.cookie("email", email, { maxAge: 24 * 60 * 60 * 1000 });
   res.cookie("lineId", lineId, { maxAge: 24 * 60 * 60 * 1000 });
 
   res.send(`

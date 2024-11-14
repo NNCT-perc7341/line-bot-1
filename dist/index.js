@@ -34,6 +34,7 @@ const client = new bot_sdk_1.Client({
 const app = (0, express_1.default)();
 // クッキーを使用するためのミドルウェアを追加
 app.use((0, cookie_parser_1.default)());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).send({
         message: "success",
@@ -156,6 +157,7 @@ app.get("/login", (req, res) => {
   `);
 });
 //login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
+// login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
 app.post("/login/confirm", (req, res) => {
     const { email, lineId } = req.body;
     // メールアドレスとLINE IDをクッキーに保存
