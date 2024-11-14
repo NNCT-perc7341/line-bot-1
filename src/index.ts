@@ -2,10 +2,7 @@ import {
   middleware,
   MiddlewareConfig,
   WebhookEvent,
-  TextMessage,
-  MessageAPIResponseBase,
   Client,
-  TemplateMessage
 } from "@line/bot-sdk";
 import express, { Application, Request, Response } from "express";
 import cookieParser from "cookie-parser"; // クッキーを処理するために追加

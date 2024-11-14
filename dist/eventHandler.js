@@ -50,6 +50,21 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
             else if (text === "画像カルーセル") {
                 yield (0, templateMessages_1.sendImageCarouselTemplate)(client, replyToken);
             }
+            else if (text === "Line Product Carousel") {
+                yield (0, templateMessages_1.lineProductCarousel)(client, replyToken);
+            }
+            else if (text === "Line Link Button") {
+                yield (0, templateMessages_1.lineLinkButton)(client, replyToken);
+            }
+            else if (text === "Line Order Confirm") {
+                yield (0, templateMessages_1.lineOrderConfirm)(client, replyToken);
+            }
+            else if (text === "Line Status Message 通常") {
+                yield (0, templateMessages_1.lineStatusMessageNormal)(client, replyToken);
+            }
+            else if (text === "Line Status Message キャンセル") {
+                yield (0, templateMessages_1.lineStatusMessageCancel)(client, replyToken);
+            }
             else if (text === "ログイン") {
                 if (userId)
                     yield (0, templateMessages_1.sendLoginForm)(client, replyToken, userId);

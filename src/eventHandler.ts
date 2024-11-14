@@ -4,7 +4,12 @@ import {
   sendConfirmTemplate, 
   sendCarouselTemplate, 
   sendImageCarouselTemplate, 
-  sendLoginForm
+  sendLoginForm,
+  lineProductCarousel,
+  lineLinkButton,
+  lineOrderConfirm,
+  lineStatusMessageNormal,
+  lineStatusMessageCancel
 } from "./templateMessages";
 
 // イベントを処理する関数
@@ -47,6 +52,16 @@ export const eventHandler = async (
         await sendCarouselTemplate(client, replyToken);
       } else if (text === "画像カルーセル") {
         await sendImageCarouselTemplate(client, replyToken);
+      } else if (text === "Line Product Carousel") {
+        await lineProductCarousel(client, replyToken);
+      } else if (text === "Line Link Button") {
+        await lineLinkButton(client, replyToken);
+      } else if (text === "Line Order Confirm") {
+        await lineOrderConfirm(client, replyToken);
+      } else if (text === "Line Status Message 通常") {
+        await lineStatusMessageNormal(client, replyToken);
+      } else if (text === "Line Status Message キャンセル") {
+        await lineStatusMessageCancel(client, replyToken);
       } else if (text === "ログイン") {
         if (userId) await sendLoginForm(client, replyToken, userId);
         else console.error("ユーザーIDが取得できませんでした");
