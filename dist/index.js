@@ -102,19 +102,19 @@ app.get("/pageB", (req, res) => {
 });
 // イベントを処理する関数
 const eventHandler = (event) => __awaiter(void 0, void 0, void 0, function* () {
-    if (event.type === "postback") {
-        // postbackイベントの処理
+    if (event.type === "postback") { // postbackイベントの処理
         const replyToken = event.replyToken;
         const data = event.postback.data;
-        // postbackデータに基づいて画像カルーセルを表示
+        // 画像カルーセルを表示
         if (data === "showImageCarousel" && replyToken) {
             yield sendImageCarouselTemplate(replyToken);
         }
         return;
     }
-    else if (event.type === "message" && event.message.type === "text") {
+    else if (event.type === "message" && event.message.type === "text") { //messageイベントの処理
         const replyToken = event.replyToken;
         const { text } = event.message;
+        const userId = event.source.userId;
         // "a" というメッセージを受信した場合
         if (text === "a" && replyToken) {
             const response = {
@@ -137,6 +137,12 @@ const eventHandler = (event) => __awaiter(void 0, void 0, void 0, function* () {
             }
             else if (text === "画像カルーセル") {
                 yield sendImageCarouselTemplate(replyToken);
+            }
+            else if (text === "ログイン") {
+                if (userId)
+                    yield sendLoginForm(replyToken, userId);
+                else
+                    console.error("ユーザーIDが取得できませんでした");
             }
             else {
                 // おうむ返しの処理
@@ -232,6 +238,27 @@ const sendImageCarouselTemplate = (replyToken) => __awaiter(void 0, void 0, void
                 {
                     imageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/vga-s_1024x1024.png",
                     action: { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/vga" }
+                }
+            ]
+        }
+    };
+    yield client.replyMessage(replyToken, message);
+});
+// ログインフォーム
+const sendLoginForm = (replyToken, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const loginUrl = `https://https://line-bot-1-1.vercel.app/login?userId=${userId}`;
+    const message = {
+        type: "template",
+        altText: "ログイン用のメッセージです",
+        template: {
+            type: "buttons",
+            title: "ログイン",
+            text: "以下のボタンを押してログインしてください",
+            actions: [
+                {
+                    type: "uri",
+                    label: "ログイン",
+                    uri: loginUrl,
                 }
             ]
         }
