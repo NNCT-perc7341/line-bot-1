@@ -94,7 +94,7 @@ export const sendImageCarouselTemplate = async (client: Client, replyToken: stri
 
 // ログインフォーム
 export const sendLoginForm = async (client: Client, replyToken: string, userId: string) => {
-  const loginUrl = `https://line-bot-1-1.vercel.app/login?userId=${userId}`;
+  const loginUrl = `https://line-bot-1-1.vercel.app/login?lineId=${userId}`;
 
   const message: TemplateMessage = {
     type: "template",

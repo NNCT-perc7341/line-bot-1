@@ -104,7 +104,7 @@ const sendImageCarouselTemplate = (client, replyToken) => __awaiter(void 0, void
 exports.sendImageCarouselTemplate = sendImageCarouselTemplate;
 // ログインフォーム
 const sendLoginForm = (client, replyToken, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const loginUrl = `https://line-bot-1-1.vercel.app/login?userId=${userId}`;
+    const loginUrl = `https://line-bot-1-1.vercel.app/login?lineId=${userId}`;
     const message = {
         type: "template",
         altText: "ログイン用のメッセージです",

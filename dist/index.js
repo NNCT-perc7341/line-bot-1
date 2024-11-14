@@ -126,8 +126,8 @@ app.get("/login", (req, res) => {
 
           // 情報を呼び出すボタンが押されたときの処理
           function loadInfo() {
-            const email = decodeURIComponent(getCookie('email') || ''); // デコードを追加
-            const lineId = decodeURIComponent(getCookie('lineId') || ''); // デコードを追加
+            const email = decodeURIComponent(getCookie('email') || '');
+            const lineId = decodeURIComponent(getCookie('lineId') || '');
             if (email && lineId) {
               document.getElementById('email').value = email;
               document.getElementById('lineId').value = lineId;
