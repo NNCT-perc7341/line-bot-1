@@ -72,10 +72,19 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
                     console.error("ユーザーIDが取得できませんでした");
             }
             else if (text === "rm-test2" && source.userId) {
-                yield client.linkRichMenuToUser(source.userId, "richmenu-alias-rm-test2");
+                try {
+                    yield client.linkRichMenuToUser(source.userId, "richmenu-alias-rm-test2");
+                    console.log(`Successfully linked rich menu to user ${userId}`);
+                }
+                catch (error) {
+                    const response = {
+                        type: "text",
+                        text: "Failed to link rich menu",
+                    };
+                    yield client.replyMessage(replyToken, response);
+                }
             }
             else {
-                // おうむ返しの処理
                 const response = {
                     type: "text",
                     text: text,

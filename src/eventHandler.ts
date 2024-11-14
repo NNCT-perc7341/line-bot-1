@@ -66,9 +66,17 @@ export const eventHandler = async (
         if (userId) await sendLoginForm(client, replyToken, userId);
         else console.error("ユーザーIDが取得できませんでした");
       } else if (text === "rm-test2" && source.userId) {
-        await client.linkRichMenuToUser(source.userId, "richmenu-alias-rm-test2");
+        try {
+          await client.linkRichMenuToUser(source.userId, "richmenu-alias-rm-test2");
+          console.log(`Successfully linked rich menu to user ${userId}`);
+        } catch (error) {
+          const response: TextMessage = {
+            type: "text",
+            text: "Failed to link rich menu",
+          };
+          await client.replyMessage(replyToken, response);
+        }
       } else {
-        // おうむ返しの処理
         const response: TextMessage = {
           type: "text",
           text: text,
