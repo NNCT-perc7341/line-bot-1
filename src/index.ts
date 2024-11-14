@@ -133,13 +133,13 @@ app.get("/login", (req: Request, res: Response) => {
 
           // 情報を呼び出すボタンが押されたときの処理
           function loadInfo() {
-            const email = decodeURIComponent(getCookie('email') || '');
-            const lineId = decodeURIComponent(getCookie('lineId') || '');
+            const email = getCookie('email') || ''; 
+            const lineId = getCookie('lineId') || '';
             if (email && lineId) {
               document.getElementById('email').value = email;
               document.getElementById('lineId').value = lineId;
               console.log("メールアドレス:", email);
-            console.log("LINE ID:", lineId);
+              console.log("LINE ID:", lineId);
             } else {
               alert('クッキーに保存された情報がありません');
             }
@@ -170,8 +170,8 @@ app.post("/login/confirm", express.urlencoded({ extended: true }), (req: Request
   const { email, lineId } = req.body;
 
   // メールアドレスとLINE IDをクッキーに保存
-  res.cookie("email", encodeURIComponent(email), { maxAge: 24 * 60 * 60 * 1000 }); // クライアントからアクセスできるように httpOnly を省略
-  res.cookie("lineId", encodeURIComponent(lineId), { maxAge: 24 * 60 * 60 * 1000 }); // クライアントからアクセスできるように httpOnly を省略
+  res.cookie("email", email, { maxAge: 24 * 60 * 60 * 1000 }); // クライアントからアクセスできるように httpOnly を省略
+  res.cookie("lineId", lineId, { maxAge: 24 * 60 * 60 * 1000 }); // クライアントからアクセスできるように httpOnly を省略
 
   res.send(`
     <html>
