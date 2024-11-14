@@ -1,0 +1,49 @@
+{
+  "size": {
+    "width": 2500,
+    "height": 1686
+  },
+  "selected": true,
+  "name": "rm-test2",
+  "chatBarText": "TAP(rm-test2)",
+  "areas": [
+    {
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1665,
+        "height": 843
+      },
+      "action": {
+        "type": "message",
+        "text": "ログイン"
+      }
+    },
+    {
+      "bounds": {
+        "x": 1665,
+        "y": 0,
+        "width": 835,
+        "height": 843
+      },
+      "action": {
+        "type": "richmenuswitch",
+        "richMenuAliasId": "richmenu-alias-rm-test1",
+        "data": "richmenu-changed-to-rm-test-1"
+            }
+    },
+    {
+      "bounds": {
+        "x": 0,
+        "y": 843,
+        "width": 1665,
+        "height": 843
+      },
+      "action": {
+        "type": "richmenuswitch",
+        "richMenuAliasId": "richmenu-alias-rm-test3",
+        "data": "richmenu-changed-to-rm-test-3"
+            }
+    }
+  ]
+}
