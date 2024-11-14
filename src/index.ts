@@ -255,7 +255,7 @@ const sendImageCarouselTemplate = async (replyToken: string) => {
 
 // ログインフォーム
 const sendLoginForm = async (replyToken: string, userId: string) => {
-  const loginUrl = `https://https://line-bot-1-1.vercel.app/login?userId=${userId}`;
+  const loginUrl = `https://line-bot-1-1.vercel.app/login?userId=${userId}`;
 
   const message: TemplateMessage = {
     type: "template",
