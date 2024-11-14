@@ -25,6 +25,7 @@ export const eventHandler = async (
     const replyToken = event.replyToken;
     const { text } = event.message;
     const userId = event.source.userId;
+    const source = event.source;
 
     // "a" というメッセージを受信した場合
     if (text === "a" && replyToken) {
@@ -49,6 +50,8 @@ export const eventHandler = async (
       } else if (text === "ログイン") {
         if (userId) await sendLoginForm(client, replyToken, userId);
         else console.error("ユーザーIDが取得できませんでした");
+      } else if (text === "rm-test2" && source.userId) {
+        await client.linkRichMenuToUser(source.userId, "richmenu-alias-rm-test2");
       } else {
         // おうむ返しの処理
         const response: TextMessage = {

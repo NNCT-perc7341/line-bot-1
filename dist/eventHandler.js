@@ -26,6 +26,7 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
         const replyToken = event.replyToken;
         const { text } = event.message;
         const userId = event.source.userId;
+        const source = event.source;
         // "a" というメッセージを受信した場合
         if (text === "a" && replyToken) {
             const response = {
@@ -54,6 +55,9 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
                     yield (0, templateMessages_1.sendLoginForm)(client, replyToken, userId);
                 else
                     console.error("ユーザーIDが取得できませんでした");
+            }
+            else if (text === "rm-test2" && source.userId) {
+                yield client.linkRichMenuToUser(source.userId, "richmenu-alias-rm-test2");
             }
             else {
                 // おうむ返しの処理
