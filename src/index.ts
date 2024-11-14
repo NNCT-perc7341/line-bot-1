@@ -10,6 +10,7 @@ import {
 import express, { Application, Request, Response } from "express";
 import cookieParser from "cookie-parser"; // クッキーを処理するために追加
 import { load } from "ts-dotenv";
+import { eventHandler } from "./eventHandler";
 
 const env = load({
   CHANNEL_ACCESS_TOKEN: String,
@@ -107,175 +108,65 @@ app.get("/pageB", (req: Request, res: Response) => {
   }
 });
 
-// イベントを処理する関数
-const eventHandler = async (
-  event: WebhookEvent
-): Promise<MessageAPIResponseBase | undefined> => {
-  if (event.type === "postback") {     // postbackイベントの処理
-    const replyToken = event.replyToken;
-    const data = event.postback.data;
+// URLのクエリパラメータからLINE IDを取得し、ログインフォームを表示するエンドポイント
+app.get("/login", (req: Request, res: Response) => {
+  const lineId = req.query.lineId || ""; // URLのクエリパラメータからLINE IDを取得
+  res.send(`
+    <html>
+      <head>
+        <title>ログインフォーム</title>
+        <style>
+          body { font-family: Arial, sans-serif; }
+          .container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+          label { display: block; margin: 10px 0 5px; }
+          input { width: 100%; padding: 8px; box-sizing: border-box; }
+          button { width: 100%; padding: 10px; margin-top: 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+          button:hover { background-color: #45a049; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h2>ログイン</h2>
+          <form action="/login/confirm" method="POST">
+            <label for="email">メールアドレス:</label>
+            <input type="email" id="email" name="email" required>
 
-    // 画像カルーセルを表示
-    if (data === "showImageCarousel" && replyToken) {
-      await sendImageCarouselTemplate(replyToken);
-    }
-    return;
-  } else if (event.type === "message" && event.message.type === "text") { //messageイベントの処理
-    const replyToken = event.replyToken;
-    const { text } = event.message;
-    const userId = event.source.userId;
+            <label for="lineId">LINE ID:</label>
+            <input type="text" id="lineId" name="lineId" value="${lineId}" readonly>
 
-    // "a" というメッセージを受信した場合
-    if (text === "a" && replyToken) {
-      const response: TextMessage = {
-        type: "text",
-        text: "ABC",
-      };
-      await client.replyMessage(replyToken, response);
-      return undefined;
-    }
+            <button type="submit">ログイン</button>
+          </form>
+        </div>
+      </body>
+    </html>
+  `);
+});
 
-    // 他のテンプレートメッセージの処理
-    if (replyToken) {
-      if (text === "ボタンテンプレート") {
-        await sendButtonTemplate(replyToken);
-      } else if (text === "確認テンプレート") {
-        await sendConfirmTemplate(replyToken);
-      } else if (text === "カルーセルテンプレート") {
-        await sendCarouselTemplate(replyToken);
-      } else if (text === "画像カルーセル") {
-        await sendImageCarouselTemplate(replyToken);
-      } else if (text === "ログイン") {
-        if (userId) await sendLoginForm(replyToken, userId);
-        else console.error("ユーザーIDが取得できませんでした");
-      } else {
-        // おうむ返しの処理
-        const response: TextMessage = {
-          type: "text",
-          text: text,
-        };
-        await client.replyMessage(replyToken, response);
-      }
-    }
-  }
-  return undefined;
-};
+// /login/confirmエンドポイントでクッキーに保存し、ログイン完了メッセージを表示
+app.post("/login/confirm", express.urlencoded({ extended: true }), (req: Request, res: Response) => {
+  const { email, lineId } = req.body;
 
-// ボタンテンプレートメッセージ（例）
-const sendButtonTemplate = async (replyToken: string) => {
-  const message: TemplateMessage = {
-    type: "template",
-    altText: "これはボタンテンプレートのメッセージです",
-    template: {
-      type: "buttons",
-      title: "メニュー",
-      text: "メニューから選択してください",
-      actions: [
-        { type: "message", label: "選択肢1", text: "選択肢1が選ばれました" },
-        { type: "message", label: "選択肢2", text: "選択肢2が選ばれました" },
-        { type: "message", label: "選択肢3", text: "選択肢3が選ばれました" },
-      ]
-    }
-  };
-  await client.replyMessage(replyToken, message);
-};
+  // メールアドレスとLINE IDをクッキーに保存
+  res.cookie("email", email, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+  res.cookie("lineId", lineId, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
 
-// 確認テンプレートメッセージ（例）
-const sendConfirmTemplate = async (replyToken: string) => {
-  const message: TemplateMessage = {
-    type: "template",
-    altText: "これは確認テンプレートのメッセージです",
-    template: {
-      type: "confirm",
-      text: "この操作を行いますか？",
-      actions: [
-        { type: "message", label: "はい", text: "はい" },
-        { type: "message", label: "いいえ", text: "いいえ" }
-      ]
-    }
-  };
-  await client.replyMessage(replyToken, message);
-};
+  res.send(`
+    <html>
+      <head>
+        <title>ログイン完了</title>
+        <style>
+          body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        </style>
+      </head>
+      <body>
+        <h2>ログイン完了</h2>
+        <p>ログイン情報が保存されました。</p>
+        <p><a href="/login">戻る</a></p>
+      </body>
+    </html>
+  `);
+});
 
-// カルーセルテンプレートメッセージ（例）
-const sendCarouselTemplate = async (replyToken: string) => {
-  const message: TemplateMessage = {
-    type: "template",
-    altText: "これはカルーセルテンプレートのメッセージです",
-    template: {
-      type: "carousel",
-      columns: [
-        {
-          thumbnailImageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/antigravity-s_1024x1024.png",
-          imageBackgroundColor: "#E6DC61",
-          title: "antigravity",
-          text: "こんなビールです。",
-          actions: [
-            { type: "message", label: "購入", text: "購入したい！" },
-            { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/antigravity" }
-          ]
-        },
-        {
-          thumbnailImageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/minitel-s_1024x1024.png",
-          imageBackgroundColor: "#EB9176",
-          title: "Minitel",
-          text: "こんなビールです",
-          actions: [
-            { type: "message", label: "購入", text: "購入したい！" },
-            { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/minitel" }
-          ]
-        }
-      ]
-    }
-  };
-  await client.replyMessage(replyToken, message);
-};
-
-// 画像カルーセルテンプレートメッセージ
-const sendImageCarouselTemplate = async (replyToken: string) => {
-  const message: TemplateMessage = {
-    type: "template",
-    altText: "これは画像カルーセルテンプレートのメッセージです",
-    template: {
-      type: "image_carousel",
-      columns: [
-        {
-          imageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/IMG_0667_1024x1024.jpg",
-          action: { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/np" }
-        },
-        {
-          imageUrl: "https://cdn.shopify.com/s/files/1/0555/7816/5537/files/vga-s_1024x1024.png",
-          action: { type: "uri", label: "詳細", uri: "https://t0ki.beer/blogs/product/vga" }
-        }
-      ]
-    }
-  };
-  await client.replyMessage(replyToken, message);
-};
-
-// ログインフォーム
-const sendLoginForm = async (replyToken: string, userId: string) => {
-  const loginUrl = `https://line-bot-1-1.vercel.app/login?userId=${userId}`;
-
-  const message: TemplateMessage = {
-    type: "template",
-    altText: "ログイン用のメッセージです",
-    template: {
-      type: "buttons",
-      title: "ログイン",
-      text: "以下のボタンを押してログインしてください",
-      actions: [
-        {
-          type: "uri",
-          label: "ログイン",
-          uri: loginUrl,
-        }
-      ]
-    }
-  };
-
-  await client.replyMessage(replyToken, message);
-};
 
 // Webhookエンドポイント
 app.post(
@@ -286,7 +177,7 @@ app.post(
     await Promise.all(
       events.map(async (event: WebhookEvent) => {
         try {
-          await eventHandler(event);
+          await eventHandler(event, client);
         } catch (err: unknown) {
           if (err instanceof Error) {
             console.error(err);
