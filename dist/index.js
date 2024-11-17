@@ -225,7 +225,10 @@ app.get("/login/check", (req, res) => {
 // Webhookエンドポイント
 app.post("/webhook", (0, bot_sdk_1.middleware)(middlewareConfig), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const events = req.body.events;
-    console.log("Received POST data:", req.body); // Webhookのリクエストボディをログに出力
+    events.forEach((event) => {
+        console.log("Source object:", event.source); // sourceプロパティをログに出力
+        console.log("Received POST data:", req.body); // Webhookのリクエストボディをログに出力
+    });
     yield Promise.all(events.map((event) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield (0, eventHandler_1.eventHandler)(event, client);
