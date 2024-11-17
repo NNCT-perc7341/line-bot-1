@@ -27,6 +27,7 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
         const { text } = event.message;
         const userId = event.source.userId;
         const source = event.source;
+        const messageType = event.source.type;
         // "a" というメッセージを受信した場合
         if (text === "a" && replyToken) {
             const response = {
@@ -86,11 +87,13 @@ const eventHandler = (event, client) => __awaiter(void 0, void 0, void 0, functi
                 }
             }
             else {
-                const response = {
-                    type: "text",
-                    text: text,
-                };
-                yield client.replyMessage(replyToken, response);
+                if (messageType === "user") {
+                    const response = {
+                        type: "text",
+                        text: text,
+                    };
+                    yield client.replyMessage(replyToken, response);
+                }
             }
         }
     }

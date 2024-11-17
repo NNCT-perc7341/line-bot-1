@@ -31,6 +31,7 @@ export const eventHandler = async (
     const { text } = event.message;
     const userId = event.source.userId;
     const source = event.source;
+    const messageType = event.source.type;
 
     // "a" というメッセージを受信した場合
     if (text === "a" && replyToken) {
@@ -78,11 +79,13 @@ export const eventHandler = async (
           console.error(`Failed to link rich menu: ${error}, User: ${source.userId}`);
         }
       } else {
-        const response: TextMessage = {
-          type: "text",
-          text: text,
-        };
-        await client.replyMessage(replyToken, response);
+        if (messageType === "user"){
+          const response: TextMessage = {
+            type: "text",
+            text: text,
+          };
+          await client.replyMessage(replyToken, response);
+        }
       }
     }
   }
