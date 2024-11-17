@@ -15,7 +15,7 @@ import {
 // イベントを処理する関数
 export const eventHandler = async (
   event: WebhookEvent,
-  client: Client
+  client: Client,
 ): Promise<MessageAPIResponseBase | undefined> => {
   if (event.type === "postback") {     // postbackイベントの処理
     const replyToken = event.replyToken;

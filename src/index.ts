@@ -239,6 +239,7 @@ app.post(
   middleware(middlewareConfig),
   async (req: Request, res: Response) => {
     const events: WebhookEvent[] = req.body.events;
+    console.log("Received POST data:", req.body); // Webhookのリクエストボディをログに出力
     await Promise.all(
       events.map(async (event: WebhookEvent) => {
         try {
