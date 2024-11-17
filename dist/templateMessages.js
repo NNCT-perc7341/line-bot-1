@@ -120,7 +120,7 @@ const sendLoginForm = (client, replyToken, userId) => __awaiter(void 0, void 0, 
                 },
                 {
                     type: "uri",
-                    label: "ログイン内容を確認",
+                    label: "内容確認",
                     uri: loginCheck,
                 }
             ]

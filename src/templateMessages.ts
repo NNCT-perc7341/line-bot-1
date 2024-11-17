@@ -111,7 +111,7 @@ export const sendLoginForm = async (client: Client, replyToken: string, userId: 
         },
         {
           type: "uri",
-          label: "ログイン内容を確認",
+          label: "内容確認",
           uri: loginCheck,
         }
       ]
