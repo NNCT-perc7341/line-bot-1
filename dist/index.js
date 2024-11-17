@@ -178,6 +178,50 @@ app.post("/login/confirm", (req, res) => {
     </html>
   `);
 });
+//login内容を表示するページ
+app.get("/login/check", (req, res) => {
+    // クッキーからメールアドレスとLINE IDを取得
+    const email = req.cookies.email;
+    const lineId = req.cookies.lineId;
+    // クッキーが存在しない場合の処理
+    if (!email || !lineId) {
+        res.send(`
+      <html>
+        <head>
+          <title>エラー</title>
+          <script>
+            alert('ログイン情報が見つかりません。ページを閉じます。');
+            window.close(); // ページを閉じる
+          </script>
+        </head>
+        <body></body>
+      </html>
+    `);
+        return;
+    }
+    // クッキーが存在する場合の表示
+    res.send(`
+    <html>
+      <head>
+        <title>ログイン内容の確認</title>
+        <style>
+          body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+          .container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+          .item { margin-bottom: 10px; font-size: 16px; }
+          .label { font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h2>ログイン内容</h2>
+          <div class="item"><span class="label">メールアドレス:</span> ${email}</div>
+          <div class="item"><span class="label">LINE ID:</span> ${lineId}</div>
+          <p><a href="/login">戻る</a></p>
+        </div>
+      </body>
+    </html>
+  `);
+});
 // Webhookエンドポイント
 app.post("/webhook", (0, bot_sdk_1.middleware)(middlewareConfig), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const events = req.body.events;

@@ -95,19 +95,24 @@ export const sendImageCarouselTemplate = async (client: Client, replyToken: stri
 // ログインフォーム
 export const sendLoginForm = async (client: Client, replyToken: string, userId: string) => {
   const loginUrl = `https://line-bot-1-1.vercel.app/login?lineId=${userId}`;
+  const loginCheck = 'https://line-bot-1-1.vercel.app/login/check';
 
   const message: TemplateMessage = {
     type: "template",
     altText: "ログイン用のメッセージです",
     template: {
-      type: "buttons",
-      title: "ログイン",
+      type: "confirm",
       text: "以下のボタンを押してログインしてください",
       actions: [
         {
           type: "uri",
           label: "ログイン",
           uri: loginUrl,
+        },
+        {
+          type: "uri",
+          label: "ログイン内容を確認",
+          uri: loginCheck,
         }
       ]
     }
